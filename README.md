@@ -18,6 +18,8 @@ python3 -m http.server 8000     # oppure qualunque server statico
 
 Serve un server (i moduli ES non si caricano da `file://`).
 
+## Come si usa
+
 0. **Descrizione libera** (facoltativa) — scrivi la stanza a parole
    («camera di 4 metri per 3 e mezzo, porta a sud a 150 dall'angolo, finestra a
    nord, ci dormo in due e mi serve una scrivania») e premi «Interpreta e
