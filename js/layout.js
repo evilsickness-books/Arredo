@@ -252,8 +252,11 @@ export function disponi(stanza, programma, extra = [], rumore = 0) {
       const rif = [...contesto.posizionati].reverse().find(p => p.key === item.rel.to);
       tentativi.push(() => candidatiRelativi(stanza, item, rif, false));
       tentativi.push(() => candidatiRelativi(stanza, item, rif, true));
+      // un comodino o una sedia hanno senso solo accanto al loro mobile:
+      // se li' non ci stanno, meglio non metterli che spedirli in un angolo
+    } else {
+      tentativi.push(() => fallbackCandidati(stanza, item.key));
     }
-    tentativi.push(() => fallbackCandidati(stanza, item.key));
 
     let best = null;
     for (const gen of tentativi) {

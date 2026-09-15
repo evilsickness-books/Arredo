@@ -11,7 +11,10 @@ Misure sempre in centimetri interi: converti i metri ("4 metri" = 400, "3 e mezz
 Muri: nord = in alto, est = a destra, sud = in basso, ovest = a sinistra.
 offset = distanza in cm dall'angolo sinistro del muro; per i muri est e ovest si misura dall'alto.
 Scegli il programma d'arredo piu' vicino a quello che l'utente vuole farci.
-Metti in mobili_extra solo i mobili richiesti che il programma non prevede gia'.
+In mobili_extra metti SOLO mobili che l'utente ha chiesto esplicitamente e che il
+programma scelto non prevede gia'. Non aggiungere mai un secondo mobile con la
+stessa funzione di uno gia' previsto (un altro letto, un altro divano, un altro
+tavolo): se la funzione e' gia' coperta, mobili_extra resta vuoto.
 Se un dato manca inventane uno plausibile (stanza 400x350, porta 90 cm, finestra 140 cm) e dichiaralo in note.
 Le note sono una frase breve, in italiano, sulle assunzioni fatte.`;
 
@@ -42,17 +45,33 @@ const SCHEMA = {
 
 export async function interpreta(testo, chiave) {
   if (!chiave) return { ...parserLocale(testo), fonte: 'locale' };
-  const risposta = await fetch(ENDPOINT(MODELLO), {
-    method: 'POST',
-    headers: { 'x-goog-api-key': chiave, 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: ISTRUZIONI }] },
-      contents: [{ parts: [{ text: testo }] }],
-      generationConfig: { responseMimeType: 'application/json', responseSchema: SCHEMA },
-    }),
+  const corpo = JSON.stringify({
+    systemInstruction: { parts: [{ text: ISTRUZIONI }] },
+    contents: [{ parts: [{ text: testo }] }],
+    generationConfig: { responseMimeType: 'application/json', responseSchema: SCHEMA },
   });
+
+  let risposta;
+  // 503 = modello sovraccarico, 429 = limite di frequenza (il piano gratuito
+  // consente 15 richieste al minuto): in entrambi i casi riprovo, ma sul 429
+  // aspetto molto di piu', perche' ritentare subito non sblocca nulla.
+  for (let tentativo = 0; tentativo < 3; tentativo++) {
+    if (tentativo) {
+      const attesa = risposta?.status === 429 ? 5000 * tentativo : 700 * tentativo;
+      await new Promise(r => setTimeout(r, attesa));
+    }
+    risposta = await fetch(ENDPOINT(MODELLO), {
+      method: 'POST',
+      headers: { 'x-goog-api-key': chiave, 'Content-Type': 'application/json' },
+      body: corpo,
+    });
+    if (risposta.ok || (risposta.status !== 429 && risposta.status !== 503)) break;
+  }
   if (!risposta.ok) {
     const err = await risposta.json().catch(() => ({}));
+    if (risposta.status === 429) {
+      throw new Error('limite di 15 richieste al minuto superato, riprova tra poco');
+    }
     throw new Error(err?.error?.message || `Gemini ha risposto ${risposta.status}`);
   }
   const dati = await risposta.json();
@@ -160,10 +179,12 @@ function normalizza(d) {
         offset: clamp(a.offset, 0, muroLungo - larg, 0),
       };
     });
+  const programma = PROGRAMS[d.programma] ? d.programma : 'vuoto';
+  const gia = new Set(PROGRAMS[programma].items.map(i => i.key));
   return {
-    larghezza, profondita, aperture,
-    programma: PROGRAMS[d.programma] ? d.programma : 'vuoto',
-    mobili_extra: (d.mobili_extra || []).filter(k => CATALOG[k]),
+    larghezza, profondita, aperture, programma,
+    // il modello a volte ripete mobili che il programma prevede gia': li tolgo
+    mobili_extra: [...new Set(d.mobili_extra || [])].filter(k => CATALOG[k] && !gia.has(k)),
     note: typeof d.note === 'string' ? d.note : '',
   };
 }
