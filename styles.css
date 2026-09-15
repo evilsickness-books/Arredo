@@ -1,53 +1,205 @@
-:root { color-scheme: light; --bordo: #e2ded4; --testo: #3c3a36; --tenue: #6d675d; --acc: #b4531f; }
-* { box-sizing: border-box; }
-body { margin: 0; font: 15px/1.45 system-ui, -apple-system, Segoe UI, sans-serif; color: var(--testo); background: #f6f4ef; }
-header { padding: 20px 24px 8px; }
-header h1 { margin: 0; font-size: 26px; letter-spacing: -.02em; }
-header p { margin: 4px 0 0; color: var(--tenue); max-width: 70ch; }
-main { display: grid; grid-template-columns: 340px 1fr; gap: 20px; padding: 16px 24px 32px; align-items: start; }
-@media (max-width: 860px) { main { grid-template-columns: 1fr; } }
+/* Registro visivo: foglio da disegno tecnico. Neutri virati al grafite,
+   un solo accento a inchiostro blu, numeri in monospazio tabellare.
+   La pianta resta sempre carta chiara, anche in tema scuro: si guarda un
+   disegno, non uno schermo. */
+:root {
+  --fondo: #e9ecef;
+  --superficie: #ffffff;
+  --superficie-2: #f3f5f7;
+  --inchiostro: #161b21;
+  --tenue: #5b6672;
+  --bordo: #d3d9df;
+  --bordo-forte: #b6bfc8;
+  --acc: #1f5f96;
+  --acc-testo: #ffffff;
+  --allarme: #9d3427;
+  --allarme-fondo: #fbecea;
+  --ok: #1f6b45;
+  --ombra: 0 1px 2px rgba(22, 27, 33, .06), 0 8px 24px rgba(22, 27, 33, .05);
+  --raggio: 10px;
+  --sans: 'IBM Plex Sans', system-ui, -apple-system, Segoe UI, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fondo: #12161a;
+    --superficie: #1a1f25;
+    --superficie-2: #22282f;
+    --inchiostro: #e7ecf1;
+    --tenue: #9aa5b1;
+    --bordo: #2e353d;
+    --bordo-forte: #414a54;
+    --acc: #5fa3dd;
+    --acc-testo: #0d1116;
+    --allarme: #f0938a;
+    --allarme-fondo: #2c1c1a;
+    --ok: #6fce9f;
+    --ombra: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 28px rgba(0, 0, 0, .35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fondo: #12161a;
+  --superficie: #1a1f25;
+  --superficie-2: #22282f;
+  --inchiostro: #e7ecf1;
+  --tenue: #9aa5b1;
+  --bordo: #2e353d;
+  --bordo-forte: #414a54;
+  --acc: #5fa3dd;
+  --acc-testo: #0d1116;
+  --allarme: #f0938a;
+  --allarme-fondo: #2c1c1a;
+  --ok: #6fce9f;
+  --ombra: 0 1px 2px rgba(0, 0, 0, .4), 0 10px 28px rgba(0, 0, 0, .35);
+  color-scheme: dark;
+}
 
-.pannello { display: flex; flex-direction: column; gap: 14px; }
-.pannello section { background: #fff; border: 1px solid var(--bordo); border-radius: 10px; padding: 12px 14px; }
-h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--tenue); margin: 0 0 10px; }
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--inchiostro);
+  font: 15px/1.5 var(--sans);
+}
+
+header { padding: 26px 24px 10px; max-width: 1400px; margin: 0 auto; }
+header h1 {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 32px);
+  font-weight: 600;
+  letter-spacing: -.015em;
+  text-wrap: balance;
+}
+header h1 span { color: var(--acc); }
+header p { margin: 6px 0 0; color: var(--tenue); max-width: 62ch; }
+
+main {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 20px;
+  padding: 14px 24px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  main { grid-template-columns: 1fr; padding-inline: 16px; }
+  /* su telefono la pianta viene prima del modulo: e' quello che si guarda */
+  .tela { order: -1; }
+}
+
+.pannello { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.pannello section {
+  background: var(--superficie);
+  border: 1px solid var(--bordo);
+  border-radius: var(--raggio);
+  padding: 14px 16px;
+}
+/* il pannello della descrizione e' il punto di ingresso: e' l'unico rialzato */
+.descrizione { box-shadow: var(--ombra); border-color: var(--bordo-forte); }
+
+h2 {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--tenue);
+  margin: 0 0 12px;
+}
 .riga { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 label { font-size: 13px; color: var(--tenue); display: inline-flex; gap: 6px; align-items: center; }
-input[type=number] { width: 78px; }
-input, select { font: inherit; padding: 6px 8px; border: 1px solid var(--bordo); border-radius: 7px; background: #fff; color: inherit; }
+
+input, select, textarea {
+  font: inherit;
+  padding: 7px 9px;
+  border: 1px solid var(--bordo);
+  border-radius: 8px;
+  background: var(--superficie);
+  color: var(--inchiostro);
+  min-width: 0;
+}
+input[type=number] { width: 84px; font-family: var(--mono); font-variant-numeric: tabular-nums; }
 select { width: 100%; margin-bottom: 8px; }
-button, .file { font: inherit; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--bordo); background: #fff; cursor: pointer; }
-button:hover, .file:hover { border-color: #c9c2b4; }
-.primario { background: var(--acc); border-color: var(--acc); color: #fff; font-weight: 600; flex: 1; }
-.secondario { background: #f3f1ec; }
-.mini { padding: 2px 7px; font-size: 13px; line-height: 1.2; }
-.nota { font-size: 12.5px; color: var(--tenue); margin: 8px 0 0; }
+textarea { width: 100%; resize: vertical; margin-bottom: 10px; line-height: 1.45; }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
 
-.apertura { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 0; border-bottom: 1px dashed var(--bordo); }
+button, .file {
+  font: inherit;
+  padding: 8px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--bordo-forte);
+  background: var(--superficie-2);
+  color: var(--inchiostro);
+  cursor: pointer;
+}
+button:hover, .file:hover { border-color: var(--acc); }
+button:disabled { opacity: .55; cursor: progress; }
+.primario {
+  background: var(--acc);
+  border-color: var(--acc);
+  color: var(--acc-testo);
+  font-weight: 600;
+  flex: 1;
+}
+.mini { padding: 2px 8px; font-size: 13px; line-height: 1.3; }
+.nota { font-size: 12.5px; color: var(--tenue); margin: 10px 0 0; }
+
+.descrizione .riga { margin-bottom: 6px; }
+#chiave-box { border-top: 1px solid var(--bordo); margin-top: 10px; padding-top: 10px; }
+label.pieno { display: flex; flex-direction: column; align-items: stretch; gap: 5px; margin-bottom: 8px; }
+label.pieno input { width: 100%; font-family: var(--mono); font-size: 13px; }
+.esito:empty { display: none; }
+.esito {
+  font-size: 13px;
+  color: var(--tenue);
+  background: var(--superficie-2);
+  border-left: 3px solid var(--bordo-forte);
+  border-radius: 0 6px 6px 0;
+  padding: 8px 10px;
+  margin: 8px 0 0;
+}
+.esito.errore { color: var(--allarme); background: var(--allarme-fondo); border-left-color: var(--allarme); }
+code { font-family: var(--mono); font-size: 12px; background: var(--superficie-2); padding: 1px 5px; border-radius: 4px; }
+
+.apertura {
+  display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+  padding: 9px 0; border-bottom: 1px solid var(--bordo);
+}
+.apertura:last-child { border-bottom: 0; }
 .apertura select { width: auto; margin: 0; }
-.apertura input[type=number] { width: 66px; }
+.apertura input[type=number] { width: 70px; }
 
-#elenco { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
-#elenco li { display: flex; align-items: center; gap: 6px; padding: 5px 6px; border-radius: 7px; font-size: 13.5px; cursor: pointer; }
-#elenco li.sel { background: #fdf0e7; outline: 1px solid var(--acc); }
+#elenco { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+#elenco li {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 7px; border-radius: 7px; font-size: 13.5px; cursor: pointer;
+}
+#elenco li:hover { background: var(--superficie-2); }
+#elenco li.sel { background: var(--superficie-2); box-shadow: inset 2px 0 0 var(--acc); }
 #elenco li.vuoto { color: var(--tenue); cursor: default; }
-#elenco .mis { color: var(--tenue); font-size: 12px; margin-left: auto; }
-.pastiglia { width: 12px; height: 12px; border-radius: 3px; border: 1px solid #b9b3a6; }
+#elenco .mis {
+  color: var(--tenue); font-family: var(--mono); font-size: 11.5px;
+  font-variant-numeric: tabular-nums; margin-left: auto; white-space: nowrap;
+}
+.pastiglia { width: 11px; height: 11px; border-radius: 2px; border: 1px solid var(--bordo-forte); flex: none; }
 
 .avvisi:empty { display: none; }
-.avvisi h3 { margin: 0 0 6px; font-size: 14px; color: #a33; }
-.avvisi h3.ok { color: #2c7a45; }
+.avvisi h3 { margin: 0 0 7px; font-size: 13px; color: var(--allarme); }
+.avvisi h3.ok { color: var(--ok); }
 .avvisi ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--tenue); }
-.avvisi p { margin: 6px 0 0; font-size: 13px; color: var(--tenue); }
+.avvisi li { margin-bottom: 3px; }
+.avvisi p { margin: 7px 0 0; font-size: 13px; color: var(--tenue); }
 
-.tela { background: #fff; border: 1px solid var(--bordo); border-radius: 12px; padding: 10px; }
-#pianta { width: 100%; height: min(72vh, 760px); display: block; touch-action: none; }
-
-.descrizione textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--bordo); border-radius: 8px; resize: vertical; margin-bottom: 8px; }
-.descrizione .riga { margin-bottom: 6px; }
-#chiave-box { border-top: 1px dashed var(--bordo); margin-top: 8px; padding-top: 8px; }
-label.pieno { display: flex; flex-direction: column; align-items: stretch; gap: 4px; margin-bottom: 6px; }
-label.pieno input { width: 100%; }
-.esito:empty { display: none; }
-.esito { font-size: 13px; color: var(--tenue); background: #f6f4ef; border-radius: 7px; padding: 7px 9px; margin: 6px 0 0; }
-.esito.errore { color: #a33; background: #fdf0ef; }
-code { font-size: 12px; background: #f3f1ec; padding: 1px 4px; border-radius: 4px; }
+/* il foglio: carta chiara in entrambi i temi */
+.tela {
+  background: #ffffff;
+  border: 1px solid var(--bordo-forte);
+  border-radius: var(--raggio);
+  padding: 10px;
+  box-shadow: var(--ombra);
+}
+#pianta { width: 100%; height: min(74vh, 780px); display: block; touch-action: none; }
+@media (max-width: 900px) { #pianta { height: 58vh; } }

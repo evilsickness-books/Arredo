@@ -4,7 +4,12 @@ App web statica (niente build, niente dipendenze): dai le misure della stanza,
 la posizione di porte e finestre e dici cosa ci vuoi fare; l'app propone una
 disposizione dei mobili in pianta, la disegna in scala e segnala i problemi.
 
-## Uso
+## Provarlo
+
+Pagina pubblicata (privata, apribile da telefono o computer):
+<https://claude.ai/artifact/WPCyByM3qrEpZH48sPbcAd>
+
+In locale:
 
 ```
 python3 -m http.server 8000     # oppure qualunque server statico
@@ -84,6 +89,14 @@ aperture ostruite, spazi di manovra insufficienti e passaggi sotto i 60 cm.
 | `js/layout.js` | geometria, motore di disposizione, verifiche |
 | `js/render.js` | disegno SVG in scala, quote, export PNG |
 | `js/app.js` | stato, interfaccia, trascinamento, salvataggio |
+| `tools/build-artifact.mjs` | genera `artifact/index.html` per la pubblicazione |
 
 Le misure del catalogo sono taglie standard: modificale in `js/catalog.js` per
 adattarle ai mobili reali.
+
+## Pubblicazione
+
+`node tools/build-artifact.mjs` genera `artifact/index.html`: la stessa pagina
+senza `<!doctype>`, `<html>`, `<head>` e `<body>`, che l'host inserisce da se'.
+Gli altri file (`styles.css`, `js/*.js`) si pubblicano come sono. Rigenera dopo
+ogni modifica a `index.html`, cosi' le due versioni non divergono.

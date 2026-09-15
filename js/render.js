@@ -71,10 +71,14 @@ function mobile(m, selezionato) {
   // l'etichetta si accorcia (e rimpicciolisce) finche' entra nel mobile
   const ruotaTesto = r.h > r.w * 1.4 ? ` transform="rotate(-90 ${cx} ${cy})"` : '';
   const spazio = (ruotaTesto ? r.h : r.w) - 8;
+  const largo = (testo, corpo) => testo.length * corpo * 0.58;
   let dim = 13;
   let etichetta = `${c.nome} ${c.w}×${c.d}`;
-  if (etichetta.length * dim * 0.52 > spazio) etichetta = c.nome;
-  if (etichetta.length * dim * 0.52 > spazio) dim = Math.max(8, spazio / (etichetta.length * 0.52));
+  if (largo(etichetta, dim) > spazio) etichetta = c.nome;
+  if (largo(etichetta, dim) > spazio) dim = spazio / (etichetta.length * 0.58);
+  // sotto gli 8 px non si legge: il mobile resta senza etichetta, il nome
+  // e' comunque nell'elenco a fianco
+  if (dim < 8) etichetta = '';
   return `<g class="mobile ${selezionato ? 'sel' : ''} ${c.flat ? 'piatto' : ''}" data-id="${m.id}">
     <rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="3" fill="${c.color}"/>
     ${c.flat ? '' : fronte}

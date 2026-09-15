@@ -133,7 +133,7 @@ function agganciaMobile(m) {
 
 initSelect();
 renderAperture();
-aggiorna();
+arreda(); // la pagina si apre gia' su una pianta, non su una stanza vuota
 
 $('#larghezza').addEventListener('input', () => { leggiStanza(); aggiorna(); });
 $('#profondita').addEventListener('input', () => { leggiStanza(); aggiorna(); });
