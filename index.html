@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arredo — arredatore 2D</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>Arredo</h1>
+  <p>Dammi le misure della stanza, la posizione di porte e finestre e cosa ci vuoi fare: ti propongo la disposizione dei mobili in pianta.</p>
+</header>
+
+<main>
+  <aside class="pannello">
+    <section>
+      <h2>1 · Misure della stanza</h2>
+      <div class="riga">
+        <label>Larghezza <input id="larghezza" type="number" value="400" min="150" step="5"> cm</label>
+        <label>Profondità <input id="profondita" type="number" value="350" min="150" step="5"> cm</label>
+      </div>
+    </section>
+
+    <section>
+      <h2>2 · Porte e finestre</h2>
+      <p class="nota">L'offset si misura dall'angolo sinistro del muro (per est e ovest, dall'alto).</p>
+      <div id="aperture"></div>
+      <button id="aggiungi-apertura" class="secondario">+ aggiungi apertura</button>
+    </section>
+
+    <section>
+      <h2>3 · Cosa voglio fare</h2>
+      <select id="programma"></select>
+      <div class="riga">
+        <button id="arreda" class="primario">Arreda la stanza</button>
+        <button id="variante" class="secondario">Altra proposta</button>
+      </div>
+      <select id="aggiungi-mobile"></select>
+      <button id="svuota" class="secondario">Svuota</button>
+    </section>
+
+    <section id="avvisi" class="avvisi"></section>
+
+    <section>
+      <h2>Mobili</h2>
+      <ul id="elenco"></ul>
+      <p class="nota">Trascina i mobili sulla pianta. <b>R</b> ruota, <b>Canc</b> elimina, frecce per spostare di 5 cm (25 con Shift).</p>
+    </section>
+
+    <section class="riga">
+      <button id="png" class="secondario">Esporta PNG</button>
+      <button id="salva" class="secondario">Salva progetto</button>
+      <label class="file secondario">Apri progetto<input id="carica" type="file" accept="application/json" hidden></label>
+    </section>
+  </aside>
+
+  <div class="tela">
+    <svg id="pianta" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+</main>
+
+<style id="stili-pianta">
+.pavimento { fill: #fbfaf7; }
+.griglia { stroke: #e7e3da; stroke-width: 1; }
+.muro rect { fill: #3c3a36; }
+.vano { fill: #fbfaf7; stroke: #3c3a36; stroke-width: 1.5; }
+.finestra { fill: #cfe6f5; stroke: #3c3a36; stroke-width: 1.5; }
+.arco { fill: none; stroke: #9a948a; stroke-width: 1.5; stroke-dasharray: 6 5; }
+.mobile rect { stroke: #4a463f; stroke-width: 1.5; }
+.mobile.piatto rect { stroke-dasharray: 8 6; opacity: .75; }
+.mobile.sel rect { stroke: #b4531f; stroke-width: 4; }
+.mobile { cursor: grab; }
+.fronte { stroke: #6d675d; stroke-width: 4; stroke-linecap: round; }
+.et-mobile { font: 500 13px system-ui, sans-serif; fill: #3c3a36; text-anchor: middle; pointer-events: none; }
+.et-apertura { font: 12px system-ui, sans-serif; fill: #6d675d; text-anchor: middle; }
+.et-quota { font: 600 15px system-ui, sans-serif; fill: #3c3a36; text-anchor: middle; }
+.quota line { stroke: #9a948a; stroke-width: 1.5; }
+</style>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
