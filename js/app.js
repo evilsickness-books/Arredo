@@ -2,6 +2,7 @@ import { CATALOG, PROGRAMS } from './catalog.js';
 import { disponi, verifica, ingombro } from './layout.js';
 import { disegna, puntoStanza, svgToPng } from './render.js';
 import { interpreta, parserLocale } from './ai.js';
+import { chiave, chiaveDaFile, salva as salvaChiave, dimentica as dimenticaChiave } from './chiave.js';
 
 const $ = s => document.querySelector(s);
 const svg = $('#pianta');
@@ -241,19 +242,24 @@ function scarica(blob, nome) {
 
 // ---------------------------------------------------------------- descrizione
 
-const CHIAVE_LS = 'arredo.gemini';
-$('#chiave').value = localStorage.getItem(CHIAVE_LS) || '';
+$('#chiave').value = chiaveDaFile ? '' : (chiave() || '');
+if (chiaveDaFile) {
+  $('#chiave').placeholder = 'chiave presa da js/chiave.local.js';
+  $('#chiave').disabled = true;
+  $('#chiave-salva').disabled = true;
+  $('#chiave-elimina').disabled = true;
+}
 
 $('#chiave-mostra').addEventListener('click', () => {
   $('#chiave-box').hidden = !$('#chiave-box').hidden;
 });
 $('#chiave-salva').addEventListener('click', () => {
-  localStorage.setItem(CHIAVE_LS, $('#chiave').value.trim());
+  salvaChiave($('#chiave').value);
   esito('Chiave salvata in questo browser.');
   $('#chiave-box').hidden = true;
 });
 $('#chiave-elimina').addEventListener('click', () => {
-  localStorage.removeItem(CHIAVE_LS);
+  dimenticaChiave();
   $('#chiave').value = '';
   esito('Chiave dimenticata: uso il parser locale.');
 });
@@ -271,7 +277,7 @@ $('#interpreta').addEventListener('click', async () => {
   bottone.disabled = true;
   esito('Interpreto la descrizione…');
   try {
-    const d = await interpreta(testo, localStorage.getItem(CHIAVE_LS));
+    const d = await interpreta(testo, chiave());
     applicaLettura(d);
     esito(`${d.fonte === 'gemini' ? 'Gemini' : 'Parser locale'}: ${PROGRAMS[d.programma].nome}, ` +
           `${d.larghezza}×${d.profondita} cm, ${d.aperture.length} aperture. ${d.note || ''}`.trim());
