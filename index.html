@@ -14,6 +14,26 @@
 
 <main>
   <aside class="pannello">
+    <section class="descrizione">
+      <h2>Descrivi la stanza</h2>
+      <textarea id="testo" rows="4" placeholder="Es: camera di 4 metri per 3 e mezzo, porta a sud a 150 cm dall'angolo larga 90, finestra grande a nord. Ci dormo in due e mi serve una scrivania."></textarea>
+      <div class="riga">
+        <button id="interpreta" class="primario">Interpreta e arreda</button>
+        <button id="chiave-mostra" class="secondario" title="Chiave API Gemini">🔑</button>
+      </div>
+      <div id="chiave-box" hidden>
+        <label class="pieno">Chiave API Gemini
+          <input id="chiave" type="password" placeholder="AIza… (resta solo in questo browser)" autocomplete="off">
+        </label>
+        <div class="riga">
+          <button id="chiave-salva" class="secondario">Salva</button>
+          <button id="chiave-elimina" class="secondario">Dimentica</button>
+        </div>
+        <p class="nota">Salvata in <code>localStorage</code>, mai inviata altrove che a Google. Senza chiave la descrizione viene letta da un parser locale, piu' rigido.</p>
+      </div>
+      <p id="esito" class="esito"></p>
+    </section>
+
     <section>
       <h2>1 · Misure della stanza</h2>
       <div class="riga">

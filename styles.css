@@ -41,3 +41,13 @@ button:hover, .file:hover { border-color: #c9c2b4; }
 
 .tela { background: #fff; border: 1px solid var(--bordo); border-radius: 12px; padding: 10px; }
 #pianta { width: 100%; height: min(72vh, 760px); display: block; touch-action: none; }
+
+.descrizione textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--bordo); border-radius: 8px; resize: vertical; margin-bottom: 8px; }
+.descrizione .riga { margin-bottom: 6px; }
+#chiave-box { border-top: 1px dashed var(--bordo); margin-top: 8px; padding-top: 8px; }
+label.pieno { display: flex; flex-direction: column; align-items: stretch; gap: 4px; margin-bottom: 6px; }
+label.pieno input { width: 100%; }
+.esito:empty { display: none; }
+.esito { font-size: 13px; color: var(--tenue); background: #f6f4ef; border-radius: 7px; padding: 7px 9px; margin: 6px 0 0; }
+.esito.errore { color: #a33; background: #fdf0ef; }
+code { font-size: 12px; background: #f3f1ec; padding: 1px 4px; border-radius: 4px; }

@@ -1,6 +1,7 @@
 import { CATALOG, PROGRAMS } from './catalog.js';
 import { disponi, verifica, ingombro } from './layout.js';
 import { disegna, puntoStanza, svgToPng } from './render.js';
+import { interpreta, parserLocale } from './ai.js';
 
 const $ = s => document.querySelector(s);
 const svg = $('#pianta');
@@ -236,4 +237,70 @@ function scarica(blob, nome) {
   a.download = nome;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+// ---------------------------------------------------------------- descrizione
+
+const CHIAVE_LS = 'arredo.gemini';
+$('#chiave').value = localStorage.getItem(CHIAVE_LS) || '';
+
+$('#chiave-mostra').addEventListener('click', () => {
+  $('#chiave-box').hidden = !$('#chiave-box').hidden;
+});
+$('#chiave-salva').addEventListener('click', () => {
+  localStorage.setItem(CHIAVE_LS, $('#chiave').value.trim());
+  esito('Chiave salvata in questo browser.');
+  $('#chiave-box').hidden = true;
+});
+$('#chiave-elimina').addEventListener('click', () => {
+  localStorage.removeItem(CHIAVE_LS);
+  $('#chiave').value = '';
+  esito('Chiave dimenticata: uso il parser locale.');
+});
+
+function esito(testo, errore = false) {
+  const el = $('#esito');
+  el.textContent = testo;
+  el.classList.toggle('errore', errore);
+}
+
+$('#interpreta').addEventListener('click', async () => {
+  const testo = $('#testo').value.trim();
+  if (!testo) return esito('Scrivi cosa vuoi fare della stanza.', true);
+  const bottone = $('#interpreta');
+  bottone.disabled = true;
+  esito('Interpreto la descrizione…');
+  try {
+    const d = await interpreta(testo, localStorage.getItem(CHIAVE_LS));
+    applicaLettura(d);
+    esito(`${d.fonte === 'gemini' ? 'Gemini' : 'Parser locale'}: ${PROGRAMS[d.programma].nome}, ` +
+          `${d.larghezza}×${d.profondita} cm, ${d.aperture.length} aperture. ${d.note || ''}`.trim());
+  } catch (e) {
+    // se la chiamata a Gemini fallisce non resto a mani vuote
+    const d = { ...parserLocale(testo), fonte: 'locale' };
+    applicaLettura(d);
+    esito(`Gemini non ha risposto (${e.message}). Ho usato il parser locale: controlla misure e aperture.`, true);
+  } finally {
+    bottone.disabled = false;
+  }
+});
+
+function applicaLettura(d) {
+  stato.stanza.w = d.larghezza;
+  stato.stanza.h = d.profondita;
+  stato.stanza.aperture = d.aperture.length ? d.aperture : stato.stanza.aperture;
+  stato.programma = d.programma;
+  $('#larghezza').value = d.larghezza;
+  $('#profondita').value = d.profondita;
+  $('#programma').value = d.programma;
+  renderAperture();
+  leggiStanza();
+  const r = disponi(stato.stanza, stato.programma, d.mobili_extra || []);
+  stato.mobili = r.mobili;
+  stato.selezionato = null;
+  aggiorna();
+  if (r.scartati.length) {
+    $('#avvisi').insertAdjacentHTML('beforeend',
+      `<p class="scartati">Non c'e' spazio per: ${r.scartati.join(', ')}.</p>`);
+  }
 }
